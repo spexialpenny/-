@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday, 奕廷哥 ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAF8F5;
+      --card-bg: #FFFFFF;
+      --paper-tint: #F4EFE6;
+      --text-main: #2C2A29;
+      --text-muted: #6E6A66;
+      --accent: #C87D32;
+      --accent-hover: #B06A24;
+      --accent-soft: rgba(200, 125, 50, 0.12);
+      --border: #E6DFD5;
+      --shadow: 0 12px 32px rgba(44, 42, 41, 0.08);
+      --stamp-red: #C0392B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      background-image: radial-gradient(#E5DEC9 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      line-height: 1.7;
+    }
+
+    /* 音樂控制浮動按鈕 */
+    .music-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .music-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-6px); }
+    }
+
+    .shake {
+      animation: shake 0.35s ease;
+    }
+
+    .paper-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    h1, h2, .serif {
+      font-family: 'Noto Serif TC', serif;
+    }
+
+    /* 第零幕：生日密碼鎖 */
+    .lock-box {
+      text-align: center;
+      padding: 44px 28px;
+      background: linear-gradient(180deg, #FFFFFF 0%, var(--paper-tint) 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .lock-icon {
+      font-size: 2.6rem;
+      margin-bottom: 12px;
+    }
+
+    .pin-display {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 22px 0 12px;
+    }
+
+    .pin-dot {
+      width: 48px;
+      height: 54px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: #FFF;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      transition: all 0.2s;
+    }
+
+    .pin-dot.filled {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .pin-hint {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      min-height: 24px;
+      margin-bottom: 18px;
+    }
+
+    .pin-hint.error {
+      color: var(--stamp-red);
+      font-weight: 600;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    .key-btn {
+      background: #FFF;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .key-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .key-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* 第一幕：信封封面 */
+    .envelope-box {
+      text-align: center;
+      padding: 48px 28px;
+      background: linear-gradient(180deg, #FFFFFF 0%, var(--paper-tint) 100%);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .wax-seal {
+      width: 68px;
+      height: 68px;
+      background: var(--accent);
+      color: #FFF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin: 0 auto 20px;
+      box-shadow: 0 6px 16px rgba(200, 125, 50, 0.35);
+      border: 3px solid #F6E6D3;
+    }
+
+    .envelope-box h1 {
+      font-size: 1.75rem;
+      margin-bottom: 8px;
+    }
+
+    .envelope-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+
+    /* 按鈕 */
+    .btn-primary {
+      background: var(--accent);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(200, 125, 50, 0.25);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    /* 卡片內文 */
+    .letter-content {
+      background: var(--paper-tint);
+      border-radius: 14px;
+      padding: 24px 22px;
+      margin: 16px 0 24px;
+      font-size: 1.02rem;
+      border-left: 3px solid var(--accent);
+    }
+
+    .letter-content p {
+      margin-bottom: 14px;
+    }
+
+    .letter-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .signature {
+      text-align: right;
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-top: 12px;
+    }
+
+    /* 測驗選項 */
+    .progress-bar {
+      height: 6px;
+      background: var(--paper-tint);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 16%;
+      transition: width 0.3s ease;
+    }
+
+    .quiz-q {
+      font-size: 1.22rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      text-align: left;
+      font-size: 0.98rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: translateX(4px);
+    }
+
+    /* 左右二選一 PK 卡片 */
+    .warm-note {
+      background: #FFF9F0;
+      border: 1px dashed var(--accent);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      color: #8C5319;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .pk-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 440px) {
+      .pk-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gift-choice {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .gift-choice:hover {
+      border-color: var(--accent);
+      background: #FFFFFF;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(200, 125, 50, 0.16);
+    }
+
+    .gift-icon {
+      font-size: 2.6rem;
+      margin-bottom: 10px;
+    }
+
+    .gift-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .gift-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .select-pill {
+      margin-top: 14px;
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 12px;
+      border-radius: 99px;
+    }
+
+    /* 最終兌換憑證與簽收印章 */
+    .voucher {
+      border: 2px solid var(--accent);
+      border-radius: 18px;
+      padding: 28px 22px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #FAF5EC 100%);
+      text-align: center;
+      margin: 16px 0 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .voucher-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .voucher-gift {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 10px 0;
+    }
+
+    .voucher-meta {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      border-top: 1px dashed var(--border);
+      padding-top: 14px;
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 紅色簽收印章 */
+    .official-stamp {
+      position: absolute;
+      top: 18px;
+      right: 16px;
+      border: 3px solid var(--stamp-red);
+      color: var(--stamp-red);
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      transform: rotate(-14deg) scale(2);
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(255, 255, 255, 0.85);
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .official-stamp.stamped {
+      opacity: 0.92;
+      transform: rotate(-14deg) scale(1);
+    }
+
+    .action-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .copy-toast {
+      font-size: 0.85rem;
+      color: #2E7D32;
+      margin-top: 8px;
+      min-height: 20px;
+      font-weight: 600;
+    }
+
+    canvas#confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 99;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="music-btn" class="music-toggle" onclick="toggleMusic()">🔊 生日音樂盒</button>
+  <canvas id="confetti"></canvas>
+
+  <div class="app-container">
+
+    <!-- 第零幕：生日專屬密碼鎖 -->
+    <div id="screen-lock" class="screen active">
+      <div class="lock-box" id="lock-card">
+        <div class="lock-icon">🔒</div>
+        <span class="badge">PRIVATE DELIVERY</span>
+        <h2 style="font-size: 1.45rem; margin-bottom: 6px;">奕廷哥的專屬驚喜信箱</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">請輸入通關密碼解鎖（提示：壽星的生日 4 碼）</p>
+
+        <div class="pin-display">
+          <div class="pin-dot" id="dot-0"></div>
+          <div class="pin-dot" id="dot-1"></div>
+          <div class="pin-dot" id="dot-2"></div>
+          <div class="pin-dot" id="dot-3"></div>
+        </div>
+
+        <div class="pin-hint" id="pin-hint"></div>
+
+        <div class="keypad">
+          <button class="key-btn" onclick="pressKey('1')">1</button>
+          <button class="key-btn" onclick="pressKey('2')">2</button>
+          <button class="key-btn" onclick="pressKey('3')">3</button>
+          <button class="key-btn" onclick="pressKey('4')">4</button>
+          <button class="key-btn" onclick="pressKey('5')">5</button>
+          <button class="key-btn" onclick="pressKey('6')">6</button>
+          <button class="key-btn" onclick="pressKey('7')">7</button>
+          <button class="key-btn" onclick="pressKey('8')">8</button>
+          <button class="key-btn" onclick="pressKey('9')">9</button>
+          <button class="key-btn" style="font-size: 0.9rem; color: var(--text-muted);" onclick="clearPin()">清除</button>
+          <button class="key-btn" onclick="pressKey('0')">0</button>
+          <button class="key-btn" style="font-size: 0.9rem; color: var(--text-muted);" onclick="backspacePin()">⌫</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第一幕：信封封面 -->
+    <div id="screen-envelope" class="screen">
+      <div class="envelope-box">
+        <div class="wax-seal">11.21</div>
+        <span class="badge">UNLOCKED ✨</span>
+        <h1>To：奕廷哥</h1>
+        <p class="envelope-sub">密碼正確！有一封給你的生日卡片，還有一個神祕小任務。</p>
+        <button class="btn-primary" onclick="openCardWithMusic()">拆開信封 💌</button>
+      </div>
+    </div>
+
+    <!-- 第二幕：生日卡片 -->
+    <div id="screen-card" class="screen">
+      <div class="paper-card">
+        <span class="badge">BIRTHDAY CARD</span>
+        <h2 style="font-size: 1.4rem;">給最可靠的奕廷哥</h2>
+        <div class="letter-content">
+          <p><strong>Dear 哥：</strong></p>
+          <p>生日快樂，轉眼又過了一歲。</p>
+          <p>一直很佩服你在工作上的表現，還有待人處事的圓滑與成熟，你一直是我學習最好的榜樣。</p>
+          <p>謝謝你和家人總是帶給我這麼堅強、可靠的感受；我也希望在你的心裡，我同樣是一份安定的力量。</p>
+          <p>祝你新的一歲平安、順心，每天都過得自在開心！</p>
+          <div class="signature">沛欣 妹</div>
+        </div>
+        <button class="btn-primary" onclick="startQuiz()">領取你的生日任務 →</button>
+      </div>
+    </div>
+
+    <!-- 第三幕：6 題純暗示盲選測驗（不透露具體禮物） -->
+    <div id="screen-quiz" class="screen">
+      <div class="paper-card">
+        <div class="progress-bar"><div class="progress-fill" id="quiz-progress"></div></div>
+        <span class="badge" id="quiz-step-label">直覺測驗 · 1 / 6</span>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">照最近的真實感受選就好，系統會幫你配對最合拍的驚喜 ✨</p>
+        <div class="quiz-q" id="quiz-question"></div>
+        <div class="option-list" id="quiz-options"></div>
+      </div>
+    </div>
+
+    <!-- 第四幕：盲盒揭曉結果（可蓋章簽收，或按「換一個」進入兩兩 PK） -->
+    <div id="screen-result" class="screen">
+      <div class="paper-card" style="text-align: center;">
+        <span class="badge" id="result-badge">MYSTERY REVEAL 🎁</span>
+        <h2 style="font-size: 1.4rem;" id="result-heading">根據你的 6 題直覺，為你配對的禮物是——</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 6px;" id="result-sub">
+          怕買到你用不到的東西，所以等你確認喜歡我才買！
+        </p>
+
+        <div class="voucher">
+          <div class="official-stamp" id="official-stamp">奕廷哥<br>已確認簽收</div>
+          <div class="voucher-label">2026 BIRTHDAY GIFT VOUCHER</div>
+          <div id="final-icon" style="font-size: 3.2rem; margin: 8px 0;"></div>
+          <div class="voucher-gift" id="final-title"></div>
+          <div id="final-desc" style="font-size: 0.9rem; color: var(--text-muted);"></div>
+          <div class="voucher-meta">
+            <span>持有者：<strong>奕廷哥</strong></span>
+            <span>狀態：<strong id="voucher-status">待壽星確認</strong></span>
+          </div>
+        </div>
+
+        <div class="warm-note" style="margin-bottom: 16px;">
+          💡 貼心註解：這幾個選項的價值都差不多，不用糾結哪個划算，<strong>照你自己的心意去挑最喜歡的比較重要！</strong>
+        </div>
+
+        <!-- 尚未蓋章時的按鈕組 -->
+        <div class="action-stack" id="unconfirmed-actions">
+          <button class="btn-primary" onclick="stampVoucher()">💮 就是這個了！蓋章簽收</button>
+          <button class="btn-secondary" id="switch-to-pk-btn" onclick="startPKFromReject()">先不要，我想換一個看看（開啟全部選項兩兩挑）</button>
+        </div>
+
+        <!-- 蓋章簽收後的按鈕組 -->
+        <div class="action-stack" id="confirmed-actions" style="display: none;">
+          <button class="btn-primary" onclick="copyVoucher()">📋 一鍵複製兌換憑證傳給沛欣</button>
+          <button class="btn-secondary" onclick="startPKFromReject()">還是想看看其他選項並重新挑</button>
+        </div>
+
+        <div class="copy-toast" id="copy-toast"></div>
+      </div>
+    </div>
+
+    <!-- 第五幕：兩兩二選一 PK 擂台（當第一次按「不要 / 換一個」時啟動） -->
+    <div id="screen-pk" class="screen">
+      <div class="paper-card">
+        <span class="badge" id="pk-round-badge">二選一對決 · 第 1 / 3 輪</span>
+        <h2 style="font-size: 1.32rem; margin-bottom: 8px;">那我們直接公開全部選項，兩兩挑出最愛！</h2>
+        <div class="warm-note">
+          💡 價值都抓相等的，不用客氣或替我省錢，<strong>照你自己的心意去挑喜歡的比較重要！</strong>
+        </div>
+        <div class="pk-grid" id="pk-container"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 畫面切換
+    function goToScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // 1. 生日密碼鎖邏輯 (1121)
+    // ==========================================
+    let currentPin = "";
+    const CORRECT_PIN = "1121";
+
+    function updatePinUI() {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i < currentPin.length) {
+          dot.textContent = "●";
+          dot.classList.add("filled");
+        } else {
+          dot.textContent = "";
+          dot.classList.remove("filled");
+        }
+      }
+    }
+
+    function pressKey(num) {
+      if (currentPin.length >= 4) return;
+      currentPin += num;
+      updatePinUI();
+      document.getElementById("pin-hint").textContent = "";
+      document.getElementById("pin-hint").classList.remove("error");
+
+      if (currentPin.length === 4) {
+        if (currentPin === CORRECT_PIN) {
+          playUnlockChime();
+          setTimeout(() => goToScreen("screen-envelope"), 300);
+        } else {
+          const lockCard = document.getElementById("lock-card");
+          const hint = document.getElementById("pin-hint");
+          lockCard.classList.remove("shake");
+          void lockCard.offsetWidth;
+          lockCard.classList.add("shake");
+          hint.textContent = "密碼不對喔～連自己生日都忘記嗎？提示：11月21日 😆";
+          hint.classList.add("error");
+          setTimeout(() => {
+            currentPin = "";
+            updatePinUI();
+          }, 600);
+        }
+      }
+    }
+
+    function clearPin() {
+      currentPin = "";
+      updatePinUI();
+    }
+
+    function backspacePin() {
+      currentPin = currentPin.slice(0, -1);
+      updatePinUI();
+    }
+
+    // ==========================================
+    // 2. Web Audio API 八音盒生日快樂歌
+    // ==========================================
+    let audioCtx = null;
+    let isMusicPlaying = false;
+    let musicTimer = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+    }
+
+    function playNote(freq, duration, delay = 0, vol = 0.12) {
+      if (!audioCtx) return;
+      const startTime = audioCtx.currentTime + delay;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, startTime);
+
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.exponentialRampToValueAtTime(vol, startTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration + 0.05);
+    }
+
+    function playUnlockChime() {
+      initAudio();
+      playNote(523.25, 0.25, 0, 0.1);
+      playNote(659.25, 0.35, 0.12, 0.1);
+    }
+
+    function playStampSound() {
+      initAudio();
+      playNote(180, 0.18, 0, 0.22);
+      playNote(523.25, 0.3, 0.08, 0.12);
+    }
+
+    function playHappyBirthdayLoop() {
+      if (!isMusicPlaying) return;
+      initAudio();
+      const notes = [
+        [261.63, 0.35, 0.0], [261.63, 0.35, 0.4], [293.66, 0.7, 0.8], [261.63, 0.7, 1.6], [349.23, 0.7, 2.4], [329.63, 1.3, 3.2],
+        [261.63, 0.35, 4.8], [261.63, 0.35, 5.2], [293.66, 0.7, 5.6], [261.63, 0.7, 6.4], [392.00, 0.7, 7.2], [349.23, 1.3, 8.0],
+        [261.63, 0.35, 9.6], [261.63, 0.35, 10.0], [523.25, 0.7, 10.4], [440.00, 0.7, 11.2], [349.23, 0.7, 12.0], [329.63, 0.7, 12.8], [293.66, 1.3, 13.6],
+        [466.16, 0.35, 15.2], [466.16, 0.35, 15.6], [440.00, 0.7, 16.0], [349.23, 0.7, 16.8], [392.00, 0.7, 17.6], [349.23, 1.5, 18.4]
+      ];
+      notes.forEach(([f, d, t]) => playNote(f, d, t, 0.09));
+      musicTimer = setTimeout(() => {
+        if (isMusicPlaying) playHappyBirthdayLoop();
+      }, 21000);
+    }
+
+    function openCardWithMusic() {
+      const btn = document.getElementById("music-btn");
+      btn.style.display = "inline-flex";
+      isMusicPlaying = true;
+      btn.textContent = "🔊 音樂播放中";
+      playHappyBirthdayLoop();
+      goToScreen("screen-card");
+    }
+
+    function toggleMusic() {
+      const btn = document.getElementById("music-btn");
+      if (isMusicPlaying) {
+        isMusicPlaying = false;
+        clearTimeout(musicTimer);
+        btn.textContent = "🔇 音樂已靜音";
+      } else {
+        isMusicPlaying = true;
+        btn.textContent = "🔊 音樂播放中";
+        playHappyBirthdayLoop();
+      }
+    }
+
+    // ==========================================
+    // 3. 6 題純暗示盲選測驗（全面覆蓋 4 種禮物配對）
+    // ==========================================
+    const gifts = [
+      {
+        id: "switch",
+        icon: "🎮",
+        title: "Nintendo Switch",
+        desc: "下班週末隨時開玩，專屬你的舒壓遊戲時光"
+      },
+      {
+        id: "stock",
+        icon: "📈",
+        title: "股票投資專屬資金",
+        desc: "直接轉化為你的投資本金，陪你一起看資產穩健成長"
+      },
+      {
+        id: "physio",
+        icon: "💆‍♂️",
+        title: "專業物理治療券",
+        desc: "徹底放鬆緊繃的肩頸與腰背，把身體狀態調回滿格"
+      },
+      {
+        id: "ticket",
+        icon: "🎫",
+        title: "演唱會 / 球賽門票",
+        desc: "走進現場感受震撼與熱血，收藏一場難忘的回憶"
+      }
+    ];
+
+    // 6 題兩兩交叉比對（4 取 2 剛好 6 種組合，完全不破梗）
+    const quizData = [
+      {
+        q: "忙完一整週回到家，你現在最渴望哪一種「充電方式」？",
+        options: [
+          { icon: "🛋️", text: "待在最自在的角落，進入完全屬於自己的沉浸世界", scoreTo: "switch" },
+          { icon: "🔥", text: "走進人群與燈光裡，感受現場氛圍帶來的熱血與震撼", scoreTo: "ticket" }
+        ]
+      },
+      {
+        q: "週末午後如果有一段空白時間，哪件事會讓你覺得「這週末太值了」？",
+        options: [
+          { icon: "🌱", text: "靜下來研究未來規劃，看著目標與資源一點一滴變大", scoreTo: "stock" },
+          { icon: "🌿", text: "把累積許久的疲勞徹底卸下，讓全身肌肉重新呼吸", scoreTo: "physio" }
+        ]
+      },
+      {
+        q: "遇到工作壓力大的時候，你的大腦比較傾向哪一種「逃離模式」？",
+        options: [
+          { icon: "🧭", text: "暫時切換頻道，投入另一個有趣的世界忘掉煩惱", scoreTo: "switch" },
+          { icon: "📣", text: "跟著節奏或歡呼聲大喊出來，把壓力一次釋放光", scoreTo: "ticket" }
+        ]
+      },
+      {
+        q: "老實傾聽一下身體與精神的聲音，最近你的狀態比較接近哪一種？",
+        options: [
+          { icon: "🧘‍♂️", text: "最近真的有點緊繃僵硬，很需要專業幫身體重開機", scoreTo: "physio" },
+          { icon: "🚀", text: "狀態還不錯！更想把能量拿去布局未來的累積與成長", scoreTo: "stock" }
+        ]
+      },
+      {
+        q: "如果突然多出一筆小預算，你直覺會想怎麼運用它？",
+        options: [
+          { icon: "📈", text: "放進長遠的計畫裡讓它慢慢滾大，看著數字成長最踏實", scoreTo: "stock" },
+          { icon: "🎈", text: "不用想太多，直接換取下班後隨時都能享受的純粹快樂", scoreTo: "switch" }
+        ]
+      },
+      {
+        q: "新的一歲，如果只能先實現一個小願望，你會選哪一個？",
+        options: [
+          { icon: "✨", text: "親眼見證一場期待已久的現場演出，收藏難忘的感動", scoreTo: "ticket" },
+          { icon: "🔋", text: "把身體照顧得舒舒服服、神清氣爽，每天都很有精神", scoreTo: "physio" }
+        ]
+      }
+    ];
+
+    let currentQuiz = 0;
+    let scores = { switch: 0, stock: 0, physio: 0, ticket: 0 };
+
+    function startQuiz() {
+      currentQuiz = 0;
+      scores = { switch: 0, stock: 0, physio: 0, ticket: 0 };
+      renderQuiz();
+      goToScreen("screen-quiz");
+    }
+
+    function renderQuiz() {
+      const item = quizData[currentQuiz];
+      document.getElementById("quiz-step-label").textContent = `直覺測驗 · ${currentQuiz + 1} / ${quizData.length}`;
+      document.getElementById("quiz-progress").style.width = `${((currentQuiz + 1) / quizData.length) * 100}%`;
+      document.getElementById("quiz-question").textContent = item.q;
+
+      const optContainer = document.getElementById("quiz-options");
+      optContainer.innerHTML = item.options.map((opt) => `
+        <button class="option-btn" onclick="selectQuizOption('${opt.scoreTo}')">
+          <span style="font-size: 1.4rem;">${opt.icon}</span>
+          <span>${opt.text}</span>
+        </button>
+      `).join("");
+    }
+
+    function selectQuizOption(targetGiftId) {
+      scores[targetGiftId] = (scores[targetGiftId] || 0) + 1;
+      currentQuiz++;
+      if (currentQuiz < quizData.length) {
+        renderQuiz();
+      } else {
+        let bestId = "switch";
+        let maxScore = -1;
+        for (const [id, sc] of Object.entries(scores)) {
+          if (sc > maxScore) {
+            maxScore = sc;
+            bestId = id;
+          }
+        }
+        const matchedGift = gifts.find(g => g.id === bestId) || gifts[0];
+        revealGift(matchedGift, true);
+      }
+    }
+
+    // ==========================================
+    // 4. 公布禮物 ＋ 蓋章簽收 ＋ 換一個兩兩 PK
+    // ==========================================
+    let currentGift = null;
+
+    function revealGift(gift, isFromBlindQuiz) {
+      currentGift = gift;
+      document.getElementById("final-icon").textContent = gift.icon;
+      document.getElementById("final-title").textContent = gift.title;
+      document.getElementById("final-desc").textContent = gift.desc;
+      document.getElementById("copy-toast").textContent = "";
+
+      const stamp = document.getElementById("official-stamp");
+      stamp.classList.remove("stamped");
+      document.getElementById("voucher-status").textContent = "待壽星確認";
+      document.getElementById("unconfirmed-actions").style.display = "flex";
+      document.getElementById("confirmed-actions").style.display = "none";
+
+      if (isFromBlindQuiz) {
+        document.getElementById("result-badge").textContent = "MYSTERY REVEAL 🎁";
+        document.getElementById("result-heading").textContent = "根據你的 6 題直覺，為你配對的禮物是——";
+        document.getElementById("switch-to-pk-btn").style.display = "block";
+      } else {
+        document.getElementById("result-badge").textContent = "FINAL CHAMPION 🏆";
+        document.getElementById("result-heading").textContent = "經過兩兩對決，你最終選出的冠軍是——";
+        document.getElementById("switch-to-pk-btn").textContent = "想再重新兩兩挑一次";
+      }
+
+      goToScreen("screen-result");
+      launchConfetti();
+    }
+
+    function stampVoucher() {
+      playStampSound();
+      document.getElementById("official-stamp").classList.add("stamped");
+      document.getElementById("voucher-status").textContent = "已蓋章確認 ✨";
+      document.getElementById("unconfirmed-actions").style.display = "none";
+      document.getElementById("confirmed-actions").style.display = "flex";
+      launchConfetti();
+    }
+
+    // ==========================================
+    // 5. 第一次不要 ➔ 公布全部 4 個兩兩二選一 PK
+    // ==========================================
+    let championIndex = 0;
+    let challengerIndex = 1;
+    let round = 1;
+
+    function startPKFromReject() {
+      championIndex = 0;
+      challengerIndex = 1;
+      round = 1;
+      renderPK();
+      goToScreen("screen-pk");
+    }
+
+    function renderPK() {
+      document.getElementById("pk-round-badge").textContent = `二選一對決 · 第 ${round} / ${gifts.length - 1} 輪`;
+      const leftGift = gifts[championIndex];
+      const rightGift = gifts[challengerIndex];
+
+      const container = document.getElementById("pk-container");
+      container.innerHTML = `
+        <div class="gift-choice" onclick="chooseGift(${championIndex})">
+          <div>
+            <div class="gift-icon">${leftGift.icon}</div>
+            <div class="gift-title">${leftGift.title}</div>
+            <div class="gift-desc">${leftGift.desc}</div>
+          </div>
+          <div><span class="select-pill">選左邊這個</span></div>
+        </div>
+
+        <div class="gift-choice" onclick="chooseGift(${challengerIndex})">
+          <div>
+            <div class="gift-icon">${rightGift.icon}</div>
+            <div class="gift-title">${rightGift.title}</div>
+            <div class="gift-desc">${rightGift.desc}</div>
+          </div>
+          <div><span class="select-pill">選右邊這個</span></div>
+        </div>
+      `;
+    }
+
+    function chooseGift(selectedIdx) {
+      championIndex = selectedIdx;
+      challengerIndex++;
+      round++;
+
+      if (challengerIndex < gifts.length) {
+        renderPK();
+      } else {
+        revealGift(gifts[championIndex], false);
+      }
+    }
+
+    function copyVoucher() {
+      if (!currentGift) return;
+      const text = `🎂 奕廷哥的 11/21 生日禮物兌換券（已蓋章簽收）！\n我選好了，今年最想要的禮物是：【${currentGift.icon} ${currentGift.title}】✨`;
+      navigator.clipboard.writeText(text).then(() => {
+        document.getElementById("copy-toast").textContent = "✅ 已複製成功！可以直接貼到 LINE 傳給沛欣囉～";
+      }).catch(() => {
+        document.getElementById("copy-toast").textContent = "請直接截圖這張蓋章憑證傳給沛欣就可以囉！";
+      });
+    }
+
+    // ==========================================
+    // 6. 慶祝彩帶動畫
+    // ==========================================
+    function launchConfetti() {
+      const canvas = document.getElementById("confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const pieces = Array.from({ length: 65 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height,
+        w: 8 + Math.random() * 6,
+        h: 6 + Math.random() * 6,
+        color: ["#C87D32", "#E6A15C", "#D9534F", "#5CB85C", "#F0AD4E"][Math.floor(Math.random() * 5)],
+        speed: 2 + Math.random() * 3,
+        angle: Math.random() * 360
+      }));
+
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.speed;
+          p.angle += 3;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.angle * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        frames++;
+        if (frames < 150) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      draw();
+    }
+  </script>
+</body>
+</html>
